@@ -74,6 +74,7 @@ builder.Services.AddDbContext<OracleDbContext3>(options =>
 
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<IUserAccessService, UserAccessService>();
+builder.Services.AddSingleton<IUserSessionService, UserSessionService>();
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

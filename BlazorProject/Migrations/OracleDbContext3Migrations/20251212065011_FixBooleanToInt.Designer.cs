@@ -12,8 +12,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace BlazorProject.Migrations.OracleDbContext3Migrations
 {
     [DbContext(typeof(OracleDbContext3))]
-    [Migration("20251212062602_AddUserIdUserNameToRegistration")]
-    partial class AddUserIdUserNameToRegistration
+    [Migration("20251212065011_FixBooleanToInt")]
+    partial class FixBooleanToInt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,38 @@ namespace BlazorProject.Migrations.OracleDbContext3Migrations
                     b.HasKey("Id");
 
                     b.ToTable("REGISTRATIONDETAILS", (string)null);
+                });
+
+            modelBuilder.Entity("BlazorProject.Data.UserDatabaseAccess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("ID");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CREATEDAT");
+
+                    b.Property<string>("DatabaseName")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("DATABASENAME");
+
+                    b.Property<int>("HasAccess")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("HASACCESS");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("USERID");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("USERDATABASEACCESS", (string)null);
                 });
 #pragma warning restore 612, 618
         }

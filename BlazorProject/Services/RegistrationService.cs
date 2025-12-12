@@ -9,6 +9,7 @@ namespace BlazorProject.Services
     {
         Task<bool> RegisterUserAsync(string userId, string userName, string email, string password);
         Task<bool> ValidateUserAsync(string email, string password);
+        Task<RegistrationDetails?> GetUserAsync(string email, string password);
     }
 
     public class RegistrationService : IRegistrationService
@@ -47,6 +48,17 @@ namespace BlazorProject.Services
                 .FirstOrDefaultAsync(r => r.Email == email);
             
             return user != null && VerifyPassword(password, user.PasswordHash);
+        }
+
+        public async Task<RegistrationDetails?> GetUserAsync(string email, string password)
+        {
+            var user = await _context.RegistrationDetails
+                .FirstOrDefaultAsync(r => r.Email == email);
+            
+            if (user != null && VerifyPassword(password, user.PasswordHash))
+                return user;
+            
+            return null;
         }
 
         private string HashPassword(string password)

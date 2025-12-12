@@ -1,5 +1,6 @@
 @page "/employee"
 @inject iEmployeeRepository _EmployeeRepository
+@inject NavigationManager NavigationManager
 
 @if(ISProcessing)
 {
@@ -20,7 +21,9 @@ else
         <div class="card-body p-4 bg-success-subtle">
             <div class="row pb-3">
                 <div class="col-6">
-                    <DatabaseSelectorMini />
+                    <button class="btn btn-secondary" @onclick="Disconnect">
+                        <i class="bi bi-box-arrow-left"></i> Disconnect
+                    </button>
                 </div>
                 <div class="col-6 text-end">
                     <a href="employee/create" class="btn btn btn-success"><i class="bi bi-plus"></i>Add New Employee</a>
@@ -72,5 +75,10 @@ else
     private async Task LoadEmployees()
     {
         Employees=await _EmployeeRepository.GetAllAsync();
+    }
+
+    private void Disconnect()
+    {
+        NavigationManager.NavigateTo("/database-selection");
     }
 }

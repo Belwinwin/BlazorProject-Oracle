@@ -6,6 +6,7 @@
 @using BlazorProject.Services
 
 @inject IRegistrationService RegistrationService
+@inject IUserSessionService UserSession
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 
@@ -53,12 +54,14 @@
 
     public async Task LoginUser()
     {
-        var isValid = await RegistrationService.ValidateUserAsync(Input.Email, Input.Password);
+        var user = await RegistrationService.GetUserAsync(Input.Email, Input.Password);
         
-        if (isValid)
+        if (user != null)
         {
+            UserSession.CurrentUserId = user.UserId;
+            UserSession.CurrentUserEmail = user.Email;
             Logger.LogInformation("User logged in successfully.");
-            NavigationManager.NavigateTo("/employee");
+            NavigationManager.NavigateTo("/database-selection");
         }
         else
         {

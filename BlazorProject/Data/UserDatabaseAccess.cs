@@ -19,7 +19,7 @@ namespace BlazorProject.Data
         public string DatabaseName { get; set; }
         
         [Column("HASACCESS")]
-        public bool HasAccess { get; set; } = true;
+        public int HasAccess { get; set; } = 1;
         
         [Column("CREATEDAT")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
