@@ -6,6 +6,7 @@ namespace BlazorProject.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<RegistrationDetails> RegistrationDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

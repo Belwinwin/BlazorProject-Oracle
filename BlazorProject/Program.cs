@@ -62,6 +62,19 @@ var oracleConnectionString = builder.Configuration.GetConnectionString("OracleCo
 builder.Services.AddDbContext<OracleDbContext>(options =>
     options.UseOracle(oracleConnectionString));
 
+// Add second Oracle DbContext
+var oracleConnectionString2 = builder.Configuration.GetConnectionString("OracleConnection2") ?? throw new InvalidOperationException("Connection string 'OracleConnection2' not found.");
+builder.Services.AddDbContext<OracleDbContext2>(options =>
+    options.UseOracle(oracleConnectionString2));
+
+// Add third Oracle DbContext
+var oracleConnectionString3 = builder.Configuration.GetConnectionString("OracleConnection3") ?? throw new InvalidOperationException("Connection string 'OracleConnection3' not found.");
+builder.Services.AddDbContext<OracleDbContext3>(options =>
+    options.UseOracle(oracleConnectionString3));
+
+builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+builder.Services.AddScoped<IUserAccessService, UserAccessService>();
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
