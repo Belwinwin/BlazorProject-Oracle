@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-BlazorProject-5ee3479f-384d-4ae7-bac6-cd1653471aa3</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ViewModels\**" />
+    <Content Remove="ViewModels\**" />
+    <EmbeddedResource Remove="ViewModels\**" />
+    <None Remove="ViewModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Components\Routes.razor.wVP6E6MgbCYVaE53.ide.g.cs" />
+    <Compile Remove="Migrations\20251211112116_addEmployeeTable.cs" />
+    <Compile Remove="Migrations\20251211112116_addEmployeeTable.Designer.cs" />
+    <Compile Remove="Migrations\OracleDb\20251210062319_InitialOracleCreate.cs" />
+    <Compile Remove="Migrations\OracleDb\20251210062319_InitialOracleCreate.Designer.cs" />
+    <Compile Remove="Migrations\OracleDb\20251210063924_CreateAllTablesOracle.cs" />
+    <Compile Remove="Migrations\OracleDb\20251210063924_CreateAllTablesOracle.Designer.cs" />
+    <Compile Remove="Migrations\OracleDb\20251210065723_AddEmployeeColumns.cs" />
+    <Compile Remove="Migrations\OracleDb\20251210065723_AddEmployeeColumns.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="MIGRATION_AND_DATABASE_CHANGES.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.11" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.0" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="9.23.60" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="MySql.Data" Version="9.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\bootstrap\NewFolder\" />
+    <Folder Include="wwwroot\lib\NewFolder1\" />
+    <Folder Include="wwwroot\lib\NewFolder\" />
+  </ItemGroup>
+
+</Project>

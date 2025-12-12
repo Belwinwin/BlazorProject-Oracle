@@ -1,0 +1,131 @@
+@page "/employee/create"
+@page "/employee/update/{id:int}"
+@inject iEmployeeRepository _employeeRepository
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _JS
+@if (IsProcessing)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading" />
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 m-4">
+        <div class="card-header bg-black bg-gradient ml-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">@(Id == 0 ? "Create" : "Update") Employee</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <EditForm Model="Employee" FormName="EmployeeUpsertForm" OnValidSubmit="UpsertEmployee">
+                <DataAnnotationsValidator />
+
+                <div class="form-floating py-3 col-12">
+                    <label for="Name">Name</label>
+                    <InputText @bind-Value="Employee.Name" class="form-control mt-5" id="Name" />
+                    <ValidationMessage For="@(() => Employee.Name)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <label for="email">Email</label>
+                    <InputText @bind-Value="Employee.email" class="form-control mt-5" id="email" />
+                    <ValidationMessage For="@(() => Employee.email)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <label for="role">role</label>
+                    <InputText @bind-Value="Employee.role" class="form-control mt-5" id="role" />
+                    <ValidationMessage For="@(() => Employee.role)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <label for="PhoneNumber">PhoneNumber</label>
+                    <InputNumber @bind-Value="Employee.PhoneNumber" class="form-control mt-5" id="PhoneNumber" />
+                    <ValidationMessage For="@(() => Employee.PhoneNumber)" />
+                
+                    <div class="row mt-3">
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-primary form-control" disabled="@IsProcessing">
+                                <i class="bi bi-floppy2-fill"></i> @(Id == 0 ? "Create" : "Update")
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="employee" class="btn btn-secondary form-control" disabled="@IsProcessing">
+                                <i class="bi bi-arrow-bar-left"></i> Back to List
+                            </a>
+                        </div>
+                        @if (Id!=0){
+                        <div class="col-6 col-md-3">
+                            <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
+                        </div>
+
+                        }
+                    </div>
+                </div>
+
+            </EditForm>
+
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Employee Employee { get; set; } = new Employee();
+
+    private bool IsProcessing { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadEmployee();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+        //return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task LoadEmployee()
+    {
+        if (Id > 0)
+        {
+            Employee = await _employeeRepository.GetAsync(Id);
+        }
+    }
+
+    private async Task UpsertEmployee()
+    {
+        IsProcessing = true;
+        if (Employee.Id == 0)
+        {
+            //create
+            await _employeeRepository.CreateAsync(Employee);
+            await _JS.ToastrSuccess("Employee Created Successfully");
+        }
+        else
+        {
+            //update
+            await _employeeRepository.UpdateAsync(Employee);
+            await _JS.ToastrSuccess("Employee Updated Successfully");
+        }
+        IsProcessing = false;
+        _navigationManager.NavigateTo("employee");
+    }
+
+    private async Task HandleDelete()
+    {
+        IsProcessing = true;
+        bool isDeleted = await _employeeRepository.DeleteAsync(Id);
+        if (isDeleted)
+        {
+            await _JS.ToastrSuccess("Employee Deleted Successfully");
+            _navigationManager.NavigateTo("employee");
+        }
+        IsProcessing = false;
+    }
+}

@@ -1,0 +1,93 @@
+@page "/database-selector"
+@using BlazorProject.Services
+@using Microsoft.JSInterop
+@using Oracle.ManagedDataAccess.Client
+@inject DatabaseConnectionService DbConnectionService
+@inject IJSRuntime JSRuntime
+
+<h3>Database Connection Selector</h3>
+
+<div class="card">
+    <div class="card-body">
+        <h5>Current Connection: @DbConnectionService.GetCurrentConnectionName()</h5>
+        
+        <div class="alert @(connectionStatus.IsSuccess ? "alert-success" : "alert-danger") mt-2">
+            <strong>Status:</strong> @connectionStatus.Message
+        </div>
+        
+        <div class="mt-3">
+            <button class="btn btn-primary me-2" @onclick="SelectOptionA">
+                Option A - Database 1 (c##belwin)
+            </button>
+            
+            <button class="btn btn-secondary" @onclick="SelectOptionB">
+                Option B - Database 2 (hr)
+            </button>
+
+        </div>
+        
+        <button class="btn btn-info mt-2" @onclick="TestConnection">
+            Test Current Connection
+        </button>
+
+    </div>
+</div>
+
+@code {
+    private (bool IsSuccess, string Message) connectionStatus = (false, "Not tested");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TestConnection();
+    }
+
+    private async Task SelectOptionA()
+    {
+        await SelectDatabase("OracleConnection");
+    }
+
+    private async Task SelectOptionB()
+    {
+        await SelectDatabase("OracleConnection2");
+    }
+
+    private async Task SelectDatabase(string connectionName)
+    {
+        if (DbConnectionService.SelectedConnection != connectionName)
+        {
+            DbConnectionService.SetConnection(connectionName);
+            await TestConnection();
+            await JSRuntime.InvokeVoidAsync("window.location.href", "/employee");
+        }
+    }
+
+    private async Task TestConnection()
+    {
+        try
+        {
+            using var conn = new Oracle.ManagedDataAccess.Client.OracleConnection(DbConnectionService.GetConnectionString());
+            await conn.OpenAsync();
+            using var cmd = new Oracle.ManagedDataAccess.Client.OracleCommand("SELECT SYSDATE FROM DUAL", conn);
+            var result = await cmd.ExecuteScalarAsync();
+            
+            // Check all objects with EMPLOYEEDETAILS in name
+            using var objCmd = new Oracle.ManagedDataAccess.Client.OracleCommand("SELECT OBJECT_NAME, OBJECT_TYPE FROM USER_OBJECTS WHERE OBJECT_NAME LIKE '%EMPLOYEE%'", conn);
+            using var reader = await objCmd.ExecuteReaderAsync();
+            var objects = new List<string>();
+            while (await reader.ReadAsync())
+            {
+                objects.Add($"{reader.GetString(0)}({reader.GetString(1)})");
+            }
+            reader.Close();
+            
+            var objectInfo = objects.Count > 0 ? string.Join(", ", objects) : "NONE";
+            connectionStatus = (true, $"✅ Connected - Server Time: {result} | Employee objects: {objectInfo}");
+            conn.Close();
+        }
+        catch (Exception ex)
+        {
+            connectionStatus = (false, $"❌ Connection failed: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+}

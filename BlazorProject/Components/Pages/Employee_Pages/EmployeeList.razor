@@ -1,0 +1,77 @@
+@page "/"
+@page "/employee"
+@inject iEmployeeRepository _EmployeeRepository
+
+@if(ISProcessing)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/lib/images/loading.gif" alt="loading" />
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 mt-2">
+
+        <div class="card-header text-white text-center py-3" style="background: linear-gradient(90deg, blue, #1e3c72);">
+            <div class="row">
+
+            <h2 class="fw-bold mb-0">Employee List</h2>
+    </div>
+    </div>
+        <div class="card-body p-4 bg-success-subtle">
+            <div class="row pb-3">
+                <div class="col-6">
+                    <DatabaseSelectorMini />
+                </div>
+                <div class="col-6 text-end">
+                    <a href="employee/create" class="btn btn btn-success"><i class="bi bi-plus"></i>Add New Employee</a>
+                </div>
+            </div>
+            @if (Employees.Any())
+            {
+                <table class="table table-bordered border-5 border-rounded table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Phone Number</th>
+                            
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var obj in Employees)
+                        {
+                            <tr>
+                                <td>@obj.Name</td>
+                                <td>@obj.role</td>
+                                <td>@obj.PhoneNumber</td>
+                                <td>
+                                    <a href="@($"employee/update/{obj.Id}")" class="btn btn btn-primary">Edit</a>
+                                </td>
+                            </tr>
+                        
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    public bool ISProcessing { get; set; } = true;
+    private IEnumerable<Employee> Employees { get; set; } = new List<Employee>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployees();
+        ISProcessing = false;
+    }
+
+    private async Task LoadEmployees()
+    {
+        Employees=await _EmployeeRepository.GetAllAsync();
+    }
+}
