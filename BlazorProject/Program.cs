@@ -1,18 +1,19 @@
+using BlazorProject;
 using BlazorProject.Components;
 using BlazorProject.Components.Account;
 using BlazorProject.Data;
 using BlazorProject.Repository;
 using BlazorProject.Repository.iRepository;
 using BlazorProject.Services;
+using Dapper;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
-using Oracle.ManagedDataAccess.Client;
-using Oracle.EntityFrameworkCore.Extensions;
 using MySql.Data.MySqlClient;
-using Dapper;
-using BlazorProject;
+using Oracle.EntityFrameworkCore.Extensions;
+using Oracle.ManagedDataAccess.Client;
+using Radzen;
+using System.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddRadzenComponents();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<DatabaseConnectionService>();

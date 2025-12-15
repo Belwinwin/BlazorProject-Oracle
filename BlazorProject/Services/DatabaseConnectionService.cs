@@ -22,10 +22,5 @@ namespace BlazorProject.Services
         {
             SelectedConnection = connectionName;
         }
-
-        public string GetCurrentConnectionName()
-        {
-            return SelectedConnection == "OracleConnection" ? "Option A (c##belwin)" : "Option B (hr)";
-        }
     }
 }

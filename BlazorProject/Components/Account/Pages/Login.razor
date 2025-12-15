@@ -62,11 +62,10 @@
         
         if (user != null)
         {
-            // Find Identity user
+
             var identityUser = await UserManager.FindByIdAsync(user.UserId);
             if (identityUser == null)
             {
-                // Create Identity user if doesn't exist
                 identityUser = new ApplicationUser
                 {
                     Id = user.UserId,
