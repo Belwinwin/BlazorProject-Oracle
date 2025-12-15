@@ -28,6 +28,7 @@ else
                     </button>
                 </div>
                 <div class="col-6 text-end">
+                    <RadzenButton Click="@ButtonClicked" Text="Hi"></RadzenButton>
                     <AuthorizeView Roles="Admin">
                         <a href="employee/create" class="btn btn btn-success"><i class="bi bi-plus"></i>Add New Employee</a>
                     </AuthorizeView>
@@ -95,5 +96,9 @@ else
     {
         await _EmployeeRepository.DeleteAsync(id);
         await LoadEmployees();
+    }
+    void ButtonClicked()
+    {
+        // Handle the Click event of RadzenButton
     }
 }
