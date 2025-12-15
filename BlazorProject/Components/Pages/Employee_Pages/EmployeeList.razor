@@ -1,6 +1,8 @@
 @page "/employee"
+@using Microsoft.AspNetCore.Components.Authorization
 @inject iEmployeeRepository _EmployeeRepository
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if(ISProcessing)
 {
@@ -14,10 +16,10 @@ else
 
         <div class="card-header text-white text-center py-3" style="background: linear-gradient(90deg, blue, #1e3c72);">
             <div class="row">
-
             <h2 class="fw-bold mb-0">Employee List</h2>
-    </div>
-    </div>
+            </div>
+            
+        </div>
         <div class="card-body p-4 bg-success-subtle">
             <div class="row pb-3">
                 <div class="col-6">
@@ -26,7 +28,9 @@ else
                     </button>
                 </div>
                 <div class="col-6 text-end">
-                    <a href="employee/create" class="btn btn btn-success"><i class="bi bi-plus"></i>Add New Employee</a>
+                    <AuthorizeView Roles="Admin">
+                        <a href="employee/create" class="btn btn btn-success"><i class="bi bi-plus"></i>Add New Employee</a>
+                    </AuthorizeView>
                 </div>
             </div>
             @if (Employees.Any())
@@ -49,7 +53,12 @@ else
                                 <td>@obj.role</td>
                                 <td>@obj.PhoneNumber</td>
                                 <td>
-                                    <a href="@($"employee/update/{obj.Id}")" class="btn btn btn-primary">Edit</a>
+                                    <AuthorizeView Roles="Admin,Manager">
+                                        <a href="@($"employee/update/{obj.Id}")" class="btn btn btn-primary">Edit</a>
+                                    </AuthorizeView>
+                                    <AuthorizeView Roles="Admin">
+                                        <button class="btn btn-danger ms-2" @onclick="() => DeleteEmployee(obj.Id)">Delete</button>
+                                    </AuthorizeView>
                                 </td>
                             </tr>
                         
@@ -80,5 +89,11 @@ else
     private void Disconnect()
     {
         NavigationManager.NavigateTo("/database-selection");
+    }
+
+    private async Task DeleteEmployee(int id)
+    {
+        await _EmployeeRepository.DeleteAsync(id);
+        await LoadEmployees();
     }
 }

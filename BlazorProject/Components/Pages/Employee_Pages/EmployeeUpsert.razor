@@ -1,5 +1,6 @@
 @page "/employee/create"
 @page "/employee/update/{id:int}"
+@using Microsoft.AspNetCore.Components.Authorization
 @inject iEmployeeRepository _employeeRepository
 @inject NavigationManager _navigationManager
 @inject IJSRuntime _JS
@@ -55,10 +56,11 @@ else
                             </a>
                         </div>
                         @if (Id!=0){
-                        <div class="col-6 col-md-3">
-                            <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
-                        </div>
-
+                        <AuthorizeView Roles="Admin" Context="auth">
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-danger" @onclick="HandleDelete">Delete</button>
+                            </div>
+                        </AuthorizeView>
                         }
                     </div>
                 </div>

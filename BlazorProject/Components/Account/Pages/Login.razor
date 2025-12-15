@@ -4,11 +4,15 @@
 @using System.ComponentModel.DataAnnotations
 @using BlazorProject.Data
 @using BlazorProject.Services
+@using Microsoft.AspNetCore.Identity
 
 @inject IRegistrationService RegistrationService
 @inject IUserSessionService UserSession
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
+@inject IdentityRoleSync RoleSync
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 
 <PageTitle>Log in</PageTitle>
 
@@ -58,8 +62,30 @@
         
         if (user != null)
         {
+            // Find Identity user
+            var identityUser = await UserManager.FindByIdAsync(user.UserId);
+            if (identityUser == null)
+            {
+                // Create Identity user if doesn't exist
+                identityUser = new ApplicationUser
+                {
+                    Id = user.UserId,
+                    UserName = user.Email,
+                    Email = user.Email,
+                    EmailConfirmed = true
+                };
+                await UserManager.CreateAsync(identityUser);
+            }
+            
+            // Sync Oracle roles with Identity
+            await RoleSync.SyncUserRolesAsync(user.UserId);
+            
+            // Sign in with Identity
+            await SignInManager.SignInAsync(identityUser, isPersistent: false);
+            
             UserSession.CurrentUserId = user.UserId;
             UserSession.CurrentUserEmail = user.Email;
+            
             Logger.LogInformation("User logged in successfully.");
             NavigationManager.NavigateTo("/database-selection");
         }

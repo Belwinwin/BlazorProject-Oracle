@@ -57,17 +57,6 @@ else
         options.UseInMemoryDatabase("BlazorProjectIdentity"));
 }
 
-// Add Oracle DbContext
-var oracleConnectionString = builder.Configuration.GetConnectionString("OracleConnection") ?? throw new InvalidOperationException("Connection string 'OracleConnection' not found.");
-builder.Services.AddDbContext<OracleDbContext>(options =>
-    options.UseOracle(oracleConnectionString));
-
-// Add second Oracle DbContext
-var oracleConnectionString2 = builder.Configuration.GetConnectionString("OracleConnection2") ?? throw new InvalidOperationException("Connection string 'OracleConnection2' not found.");
-builder.Services.AddDbContext<OracleDbContext2>(options =>
-    options.UseOracle(oracleConnectionString2));
-
-// Add third Oracle DbContext
 var oracleConnectionString3 = builder.Configuration.GetConnectionString("OracleConnection3") ?? throw new InvalidOperationException("Connection string 'OracleConnection3' not found.");
 builder.Services.AddDbContext<OracleDbContext3>(options =>
     options.UseOracle(oracleConnectionString3));
@@ -75,11 +64,22 @@ builder.Services.AddDbContext<OracleDbContext3>(options =>
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<IUserAccessService, UserAccessService>();
 builder.Services.AddSingleton<IUserSessionService, UserSessionService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IdentityRoleSync>();
+builder.Services.AddScoped<RoleInitializationService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ManagerOrAdmin", policy => policy.RequireRole("Manager", "Admin"));
+    options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
+});
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -103,6 +103,7 @@ else
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
@@ -115,6 +116,10 @@ app.MapAdditionalIdentityEndpoints();
 using (var scope = app.Services.CreateScope())
 {
     var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    
+    // Initialize roles
+    var roleInitService = scope.ServiceProvider.GetRequiredService<RoleInitializationService>();
+    await roleInitService.InitializeRolesAsync();
     
     // Test Oracle Connection
     var oracleConnStr = cfg.GetConnectionString("OracleConnection");

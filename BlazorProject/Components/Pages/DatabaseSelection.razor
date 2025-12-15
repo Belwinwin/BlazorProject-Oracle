@@ -19,9 +19,14 @@ else
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">
-                        <h3>Select Database</h3>
-                        <p>Welcome, @UserSession.CurrentUserEmail</p>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3>Select Database</h3>
+                            <p>Welcome, @UserSession.CurrentUserEmail</p>
+                        </div>
+                        <a href="/" class="btn btn-secondary">
+                            Back to Login
+                        </a>
                     </div>
                     <div class="card-body">
                         @if (accessibleDatabases.Any())
